@@ -1,0 +1,182 @@
+#    -*- mode: org -*-
+#+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:t
+#+OPTIONS: reveal_mathjax:t reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: reveal_width:1200 reveal_height:800
+#+OPTIONS: toc:1
+#+REVEAL_MARGIN: 0.2
+#+REVEAL_MIN_SCALE: 0.5
+#+REVEAL_MAX_SCALE: 2.5
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: night
+#+REVEAL_HLEVEL: 999
+#+REVEAL_EXTRA_CSS: ./presentation.css
+
+#+TITLE: Introduction to Datomic
+#+AUTHOR: Daniel De Aguiar
+#+EMAIL: ddeaguiar@gmail.com
+
+* About Me
+* What /is/ Datomic?
+** Ledger
+
+#+ATTR_REVEAL: :frag (appear)
+#+BEGIN_QUOTE
+The ledger is a permanent summary of all amounts entered in supporting
+journals which list individual transactions by date.
+- https://en.wikipedia.org/wiki/Ledger
+#+END_QUOTE
+
+#+BEGIN_NOTES
+Ledgers have been used in bookkeeping for thousands of years.
+
+Key points from the quote:
+- /Permanent/ summary
+- /List/ of individual transactions
+- /by/ date
+#+END_NOTES
+
+** Git
+
+#+BEGIN_NOTES
+Our version control systems are purpose built for tracking change at various degrees of granularity.
+
+We value tools like this and would (should) go up in arms if were told not to use them.
+#+END_NOTES
+
+** Datomic is a database of /facts/
+#+ATTR_REVEAL: :frag (appear)
+Datomic accumulates facts
+
+#+ATTR_REVEAL: :frag (appear)
+It is not /Place Oriented/.
+
+#+BEGIN_NOTES
+New information /does not/ replace old, in place.
+#+END_NOTES
+
+** What are facts?
+#+ATTR_REVEAL: :frag (appear)
+- A fact is a statement about an entity.
+- Facts are tuples.
+
+#+BEGIN_NOTES
+A fact relates an entity (subject) to a value through an attribute (predicate).
+#+END_NOTES
+
+** Fact tuples
+
+/[Entity Attribute Value]/
+
+#+BEGIN_NOTES
+Structure of a Fact tuple
+#+END_NOTES
+
+** Fact example
+#+ATTR_HTML: :width 100%
+| Entity | Attribute | Value |
+|--------+-----------+-------|
+| dan    | likes     | coke  |
+
+** Fact example
+#+ATTR_HTML: :width 100%
+| Entity | Attribute | Value |
+|--------+-----------+-------|
+| dan    | likes     | coke  |
+| dan    | likes     | pepsi |
+
+#+BEGIN_NOTES
+How are these changes represented given that Datomic accumulates facts?
+The next slides revisit our fact tuple example in this context.
+#+END_NOTES
+
+** Fact tuples are 5-tuples
+/[Entity Attribute Value Transaction Operation]/
+
+** Revisit our fact example
+#+ATTR_HTML: :width 100%
+| Entity | Attribute | Value | Transaction | Operation |
+|--------+-----------+-------+-------------+-----------|
+| dan    | likes     | coke  |        1000 | true      |
+| dan    | likes     | coke  |        1210 | false     |
+| dan    | likes     | pepsi |        1210 | true      |
+
+** A Datomic database is a collection of fact tuples
+Take a map representation of an entity and convert it to a collection
+of tuples. This collection is a simple database.
+
+** We can query the database using Datomic Datalog.
+1 minute Datalog primer.
+Query the simple database using Datomic Datalog.
+
+* Datomic's architecture
+- Storage
+- Transactor
+- Peer(s)
+
+TODO: Regarding Storage, we are no longer constrained by space.
+
+#+BEGIN_NOTES
+Talk about the architectural tactics used to ensure the quality
+attributes Datomic's architecture aims to satisfy.
+
+Discuss how it is not well suited for certain systems and present the
+architectural rationale as to why. (TODO: I need to do some research here.)
+#+END_NOTES
+
+* Working with Datomic
+#+BEGIN_SRC clojure
+(require '[datomic.api :as d])
+
+(def uri "datomic:mem//my-db")
+
+(d/create-database uri)
+
+(def conn (d/conn uri))
+(def db (d/db conn))
+
+(d/q '[:find ?e
+       :where
+       [?e :db/doc "some doc"]]
+     db)
+#+END_SRC
+*** Datomic as an in-memory database
+Take the entity we worked with earlier and create a Datomic schema for
+it.
+Demonstrate that schema is data and consisting of a collection of
+facts.
+Demonstrate transaction, retraction, querying
+**** The database as a value
+Discuss how, in all these cases, we're passing the database as a
+value. Relate this back to Datomic's architecture (peers).
+
+We can create a new database value by:
+- Filtering
+- Applying prospective (TODO: correct word?) changes.
+
+These manipulations /do not/ change the data in the underlying data store.
+*** Datomic + Scala
+- Datomic provides Java APIs.
+- Datomic is available in Clojars.
+
+#+BEGIN_SRC scala
+import datomic.api
+
+val uri = "datomic:mem//my-db"
+Peer.createDatabase(uri)
+val conn = Peer.connect(uri)
+val db = Peer.db(conn)
+
+Peer.q("[:find ?e :where [?e :db/doc \"some doc\"]]")
+#+END_SRC
+**** Use the Docker Datomic environment for exploration
+**** Use the music brains db
+Show the schema
+Walk through queries and transactions with Scala.
+*** Wrapping up
+The Datomic docs
+The Datomic apis
+
+I'm available for further inquiries. If you'd like to talk more about
+Datomic and/or Clojure at your organization, let me know!
+
+Hand out Datomic stickers if I can get them!!
