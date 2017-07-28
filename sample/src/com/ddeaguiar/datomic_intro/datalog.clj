@@ -2,17 +2,17 @@
   (:require [datomic.api :as d]))
 
 ;; Entity representation
-(def entities [{:user/firstName "Daniel"
-                :user/hobby     "Fishing"}
-               {:user/firstName "Kolby"
-                :user/hobby     "Gaming"}
-               {:user/firstName "Juan"
-                :user/hobby     "Fishing"}])
+(def entities [{:name   "Daniel"
+                :likes  "Fishing"
+                :drives "Subaru"}
+               {:name  "Kolby"
+                :likes "Gaming"}
+               {:name   "Juan"
+                :likes  "Fishing"
+                :drives "Ford"}])
 
-;; Can filter out the entity maps whose :user/hobby is 'Fishing'
-(filter #(= "Fishing" (:user/hobby %)) entities)
-
-
+;; Can filter out the entity maps who :likes 'Fishing'
+(filter #(= "Fishing" (:likes %)) entities)
 
 
 
@@ -37,16 +37,15 @@
 
 
 ;; Fact representation
-(def facts [[1 :user/firstName "Daniel"]
-            [1 :user/hobby "Fishing"]
-            [2 :user/firstName "Kolby"]
-            [2 :user/hobby "Gaming"]
-            [3 :user/firstName "Juan"]
-            [3 :user/hobby "Fishing"]])
+(def facts [["Daniel" :likes "Fishing"]
+            ["Daniel" :drives "Subaru"]
+            ["Kolby" :likes "Gaming"]
+            ["Juan" :likes "Fishing"]
+            ["Juan" :drives "Ford"]])
 
 
 ;; Can filter the collection
-(filter #(and (= :user/hobby (second %))
+(filter #(and (= :likes (second %))
               (= "Fishing" (last %)))
         facts)
 
@@ -72,14 +71,15 @@
 
 
 
+
 ;; Can treat the collection as a db and query with Datomic Datalog
-(d/q '[:find ?name
-       :in $ ?hobby
+(d/q '[:find ?entity
+       :in $ ?likes
        :where
-       [?entity :user/hobby ?hobby]
-       [?entity :user/firstName ?name]]
+       [?entity :likes ?likes]]
      facts
      "Fishing")
+
 
 
 
@@ -109,11 +109,10 @@
 
 
 ;; Return as a collection
-(d/q '[:find [?name ...]
-       :in $ ?hobby
+(d/q '[:find [?entity ...]
+       :in $ ?likes
        :where
-       [?entity :user/hobby ?hobby]
-       [?entity :user/firstName ?name]]
+       [?entity :likes ?likes]]
      facts
      "Fishing")
 
@@ -144,12 +143,12 @@
 
 
 
+
 ;; Return a scalar
-(d/q '[:find ?name .
-       :in $ ?hobby
+(d/q '[:find ?entity .
+       :in $ ?likes
        :where
-       [?entity :user/hobby ?hobby]
-       [?entity :user/firstName ?name]]
+       [?entity :likes ?likes]]
      facts
      "Gaming")
 
@@ -180,11 +179,12 @@
 
 
 
+
 ;; Return all fact tuples for matching entities
 (d/q '[:find ?entity ?attribute ?value
-       :in $ ?hobby
+       :in $ ?likes
        :where
-       [?entity :user/hobby ?hobby]
+       [?entity :likes ?likes]
        [?entity ?attribute ?value]]
      facts
      "Fishing")

@@ -45,7 +45,14 @@ Our version control systems are purpose built for tracking change at various deg
 We value tools like this and would (should) go up in arms if were told not to use them.
 #+END_NOTES
 
-** Datomic is a database of /facts/
+** Datomic is a relational database
+
+#+ATTR_REVEAL: :frag (appear)
+It's an information system
+
+#+ATTR_REVEAL: :frag (appear)
+Information consists of /facts/
+
 #+ATTR_REVEAL: :frag (appear)
 Datomic accumulates facts
 
@@ -53,6 +60,8 @@ Datomic accumulates facts
 It is not /Place Oriented/.
 
 #+BEGIN_NOTES
+The past is immutable.
+
 New information /does not/ replace old, in place.
 #+END_NOTES
 
@@ -77,14 +86,14 @@ Structure of a Fact tuple
 #+ATTR_HTML: :width 100%
 | Entity | Attribute | Value    |
 |--------+-----------+----------|
-| dan    | likes     | potatoes |
+| dan    | likes     | fishing  |
 
 ** Fact example
 #+ATTR_HTML: :width 100%
 | Entity | Attribute | Value          |
 |--------+-----------+----------------|
-| dan    | likes     | potatoes       |
-| dan    | likes     | sweet potatoes |
+| dan    | likes     | fishing        |
+| dan    | likes     | fly fishing    |
 
 #+BEGIN_NOTES
 How are these changes represented given that Datomic accumulates facts?
@@ -104,25 +113,16 @@ Operation represents either an /assertion/ or /retraction/.
 #+ATTR_HTML: :width 100%
 | Entity | Attribute | Value          | Transaction | Operation |
 |--------+-----------+----------------+-------------+-----------|
-| dan    | likes     | potatoes       |        1000 | true      |
-| dan    | likes     | potatoes       |        1210 | false     |
-| dan    | likes     | sweet potatoes |        1210 | true      |
+| dan    | likes     | fishing        |        1000 | true      |
+| dan    | likes     | fishing        |        1210 | false     |
+| dan    | likes     | fly fishing    |        1210 | true      |
 
 ** A Datomic database is a collection of fact tuples
-#+ATTR_REVEAL: :frag (appear)
-Entity Example
-#+ATTR_REVEAL: :frag (appear)
+*** Entity Example
 #+BEGIN_SRC clojure
-{:user/firstName "Daniel"
- :user/hobby     "Fishing"}
-#+END_SRC
-
-#+ATTR_REVEAL: :frag (appear)
-Fact representation
-
-#+ATTR_REVEAL: :frag (appear)
-#+BEGIN_SRC clojure
-[[1 :user/firstName "Daniel"] [1 :user/hobby "Fishing"]]
+[{:name "Daniel" :likes "Fishing"}
+{:name "Kolby" :likes "Gaming"}
+{:name "Juan" :likes "Fishing"}]
 #+END_SRC
 
 #+BEGIN_NOTES
@@ -130,9 +130,28 @@ Take a map representation of an entity and convert it to a collection
 of tuples. This collection is a simple database.
 #+END_NOTES
 
+*** Fact Database
+#+BEGIN_SRC clojure
+[["Daniel" :likes "Fishing"]
+["Kolby" :likes "Gaming"]
+["Juan" :likes "Fishing"]]
+#+END_SRC
+
+#+BEGIN_NOTES
+This /database/ is an /immutable/ clojure value.
+Datomic databases /are/ immutable and can be treated as values!
+#+END_NOTES
+
 ** Datalog
 
 We can query the database using Datomic Datalog.
+
+#+ATTR_REVEAL: :frag (appear)
+Datalog is a /declarative/ database query language
+
+#+BEGIN_NOTES
+Datalog has roots in logic programming.
+#+END_NOTES
 
 #+ATTR_REVEAL: :frag (appear)
 Code sample
@@ -141,21 +160,101 @@ Code sample
 http://www.learndatalogtoday.org/
 
 * Datomic's architecture
-- Storage
-- Transactor
-- Peer(s)
 
-TODO: Regarding Storage, we are no longer constrained by space.
+- Peer(s)
+- Client(s)
+- Peer Server
+- Transactor
+- Storage
+
+http://docs.datomic.com/architecture.html
 
 #+BEGIN_NOTES
-Talk about the architectural tactics used to ensure the quality
-attributes Datomic's architecture aims to satisfy.
-
-Discuss how it is not well suited for certain systems and present the
-architectural rationale as to why. (TODO: I need to do some research here.)
+- Composition of simple services
+- Leverage redundant, scalable storage systems (We are no longer constrained by space!)
+- Separation of writes from reads
+- Favors ACID transactions instead of write scalability
+- Distributed index resides in the application server tier, localizing queries.
 #+END_NOTES
 
+** Peers
+- Submit transactions
+- Provide data access capabilities
+
+#+BEGIN_NOTES
+Embedded. JVM languages only.
+
+Provides caching.
+
+Reads from storage if necessary.
+#+END_NOTES
+
+** Clients
+- Light-weight
+- Submit transactions
+- Provides data access capabilities
+
+#+BEGIN_NOTES
+Embedded. Any language.
+
+Does not provide caching.
+
+#+END_NOTES
+
+** Peer Server
+- Accepts queries/transactions from Clients.
+- Submits transactions
+- Provides data access
+
+#+BEGIN_NOTES
+JVM Process.
+
+Provides caching.
+#+END_NOTES
+
+** Transactor
+- Accepts transactions
+- Processes transactions serially
+- Writes to storage
+
+#+BEGIN_NOTES
+Provides Datomic's ACID guarantees.
+#+END_NOTES
+
+** Storage
+- Interface to underlying storage
+** Trade-offs
+Favors ACID transactions instead of write scalability
+
+#+BEGIN_NOTES
+Not well suited for systems that favor unlimited write scalability.
+#+END_NOTES
 * Working with Datomic
+
+** Datomic Indexes
+
+| Desired read shape | Datomic supports via         |
+|--------------------+------------------------------|
+| k/v                | AVET                         |
+| row                | EAVT                         |
+| column             | AEVT                         |
+| document           | EAVT, partitions, components |
+| graph              | VAET                         |
+
+From: /Why Datomic, Part 1/
+
+(http://www.datomic.com/videos.html)
+
+#+BEGIN_NOTES
+Datomic's indexes support different ways of reading data.
+
+This does not have to be an upfront design decision.
+#+END_NOTES
+
+** TBD
+TODO: Demonstrate graph view (bidirectional reference traversal)
+
+** TBD
 #+BEGIN_SRC clojure
 (require '[datomic.api :as d])
 
