@@ -16,6 +16,8 @@
 #+EMAIL: ddeaguiar@gmail.com
 
 * About Me
+- Software Engineer/Consultant.
+- Currently working with Clojure.
 * What /is/ Datomic?
 ** Ledger
 
@@ -73,16 +75,16 @@ Structure of a Fact tuple
 
 ** Fact example
 #+ATTR_HTML: :width 100%
-| Entity | Attribute | Value |
-|--------+-----------+-------|
-| dan    | likes     | coke  |
+| Entity | Attribute | Value    |
+|--------+-----------+----------|
+| dan    | likes     | potatoes |
 
 ** Fact example
 #+ATTR_HTML: :width 100%
-| Entity | Attribute | Value |
-|--------+-----------+-------|
-| dan    | likes     | coke  |
-| dan    | likes     | pepsi |
+| Entity | Attribute | Value          |
+|--------+-----------+----------------|
+| dan    | likes     | potatoes       |
+| dan    | likes     | sweet potatoes |
 
 #+BEGIN_NOTES
 How are these changes represented given that Datomic accumulates facts?
@@ -92,21 +94,51 @@ The next slides revisit our fact tuple example in this context.
 ** Fact tuples are 5-tuples
 /[Entity Attribute Value Transaction Operation]/
 
+#+BEGIN_NOTES
+Transaction is a monotonically increasing value.
+
+Operation represents either an /assertion/ or /retraction/.
+#+END_NOTES
+
 ** Revisit our fact example
 #+ATTR_HTML: :width 100%
-| Entity | Attribute | Value | Transaction | Operation |
-|--------+-----------+-------+-------------+-----------|
-| dan    | likes     | coke  |        1000 | true      |
-| dan    | likes     | coke  |        1210 | false     |
-| dan    | likes     | pepsi |        1210 | true      |
+| Entity | Attribute | Value          | Transaction | Operation |
+|--------+-----------+----------------+-------------+-----------|
+| dan    | likes     | potatoes       |        1000 | true      |
+| dan    | likes     | potatoes       |        1210 | false     |
+| dan    | likes     | sweet potatoes |        1210 | true      |
 
 ** A Datomic database is a collection of fact tuples
+#+ATTR_REVEAL: :frag (appear)
+Entity Example
+#+ATTR_REVEAL: :frag (appear)
+#+BEGIN_SRC clojure
+{:user/firstName "Daniel"
+ :user/hobby     "Fishing"}
+#+END_SRC
+
+#+ATTR_REVEAL: :frag (appear)
+Fact representation
+
+#+ATTR_REVEAL: :frag (appear)
+#+BEGIN_SRC clojure
+[[1 :user/firstName "Daniel"] [1 :user/hobby "Fishing"]]
+#+END_SRC
+
+#+BEGIN_NOTES
 Take a map representation of an entity and convert it to a collection
 of tuples. This collection is a simple database.
+#+END_NOTES
 
-** We can query the database using Datomic Datalog.
-1 minute Datalog primer.
-Query the simple database using Datomic Datalog.
+** Datalog
+
+We can query the database using Datomic Datalog.
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+#+ATTR_REVEAL: :frag (appear)
+http://www.learndatalogtoday.org/
 
 * Datomic's architecture
 - Storage
