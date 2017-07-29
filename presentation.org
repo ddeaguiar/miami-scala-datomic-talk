@@ -175,7 +175,7 @@ http://docs.datomic.com/architecture.html
 - Composition of simple services
 - Leverage redundant, scalable storage systems (We are no longer constrained by space!)
 - Separation of writes from reads
-- Favors ACID transactions instead of write scalability
+- Favors ACID transactions over write scalability
 - Distributed index resides in the application server tier, localizing queries.
 #+END_NOTES
 
@@ -226,7 +226,7 @@ Provides Datomic's ACID guarantees.
 ** Storage
 - Interface to underlying storage
 ** Trade-offs
-Favors ACID transactions instead of write scalability
+Favors ACID transactions over write scalability
 
 #+BEGIN_NOTES
 Not well suited for systems that favor unlimited write scalability.
