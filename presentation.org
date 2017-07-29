@@ -164,8 +164,6 @@ http://www.learndatalogtoday.org/
 * Datomic's architecture
 
 - Peer(s)
-- Client(s)
-- Peer Server
 - Transactor
 - Storage
 
@@ -191,6 +189,17 @@ Provides caching.
 Reads from storage if necessary.
 #+END_NOTES
 
+** Transactor
+- Accepts transactions
+- Processes transactions serially
+- Writes to storage
+
+#+BEGIN_NOTES
+Provides Datomic's ACID guarantees.
+#+END_NOTES
+
+** Storage
+- Interface to underlying storage
 ** Clients
 - Light-weight
 - Submit transactions
@@ -214,17 +223,6 @@ JVM Process.
 Provides caching.
 #+END_NOTES
 
-** Transactor
-- Accepts transactions
-- Processes transactions serially
-- Writes to storage
-
-#+BEGIN_NOTES
-Provides Datomic's ACID guarantees.
-#+END_NOTES
-
-** Storage
-- Interface to underlying storage
 ** Trade-offs
 Favors ACID transactions over write scalability
 
@@ -240,7 +238,7 @@ Not well suited for systems that favor unlimited write scalability.
 
 (d/create-database uri)
 
-(def conn (d/conn uri))
+(def conn (d/connect uri))
 (def db (d/db conn))
 #+END_SRC
 
@@ -248,7 +246,6 @@ Not well suited for systems that favor unlimited write scalability.
 The database as a value that is passed to functions.
 
 We'll see how powerful this is later when we demonstrate:
-- Filtering
 - Applying prospective changes.
 #+END_NOTES
 ** Schema
@@ -325,7 +322,7 @@ Datomic's indexes support different ways of reading data.
 This does not have to be an upfront design decision.
 #+END_NOTES
 
-** Wrapping up
+* Wrapping up
 - http://www.datomic.com/
 
 #+ATTR_REVEAL: :frag (appear)

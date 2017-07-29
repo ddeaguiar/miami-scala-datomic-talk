@@ -173,14 +173,6 @@
 
 
 
-
-
-
-
-
-
-
-
 ;; Return all fact tuples for matching entities
 (d/q '[:find ?entity ?attribute ?value
        :in $ ?likes

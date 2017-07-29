@@ -24,7 +24,7 @@
                [:db/add (d/tempid :db.part/user -3) :person/likes "Fishing"]
                [:db/add (d/tempid :db.part/user -3) :person/drives "Ford"]])
 
- (d/q '[:find (pull ?e [*])
+ (d/q '[:find (count ?e) .
         :where [?e :person/name]]
       (d/db conn))
 
