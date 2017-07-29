@@ -1,7 +1,8 @@
 (ns com.ddeaguiar.datomic-intro.datalog
+  "Code samples for the 'Datalog' section."
   (:require [datomic.api :as d]))
 
-;; Entity representation
+;; Person entity representation
 (def entities [{:name   "Daniel"
                 :likes  "Fishing"
                 :drives "Subaru"}

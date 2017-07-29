@@ -120,9 +120,9 @@ Operation represents either an /assertion/ or /retraction/.
 ** A Datomic database is a collection of fact tuples
 *** Entity Example
 #+BEGIN_SRC clojure
-[{:name "Daniel" :likes "Fishing"}
+[{:name "Daniel" :likes "Fishing" :drives "Subaru"}
 {:name "Kolby" :likes "Gaming"}
-{:name "Juan" :likes "Fishing"}]
+{:name "Juan" :likes "Fishing" :drives "Ford"}]
 #+END_SRC
 
 #+BEGIN_NOTES
@@ -133,8 +133,10 @@ of tuples. This collection is a simple database.
 *** Fact Database
 #+BEGIN_SRC clojure
 [["Daniel" :likes "Fishing"]
+["Daniel" :drives "Subaru"]
 ["Kolby" :likes "Gaming"]
-["Juan" :likes "Fishing"]]
+["Juan" :likes "Fishing"]
+["Juan" :drives "Ford"]]
 #+END_SRC
 
 #+BEGIN_NOTES
@@ -230,6 +232,78 @@ Favors ACID transactions instead of write scalability
 Not well suited for systems that favor unlimited write scalability.
 #+END_NOTES
 * Working with Datomic
+** In-memory database
+#+BEGIN_SRC clojure
+(require '[datomic.api :as d])
+
+(def uri "datomic:mem://my-db")
+
+(d/create-database uri)
+
+(def conn (d/conn uri))
+(def db (d/db conn))
+#+END_SRC
+
+#+BEGIN_NOTES
+The database as a value that is passed to functions.
+
+We'll see how powerful this is later when we demonstrate:
+- Filtering
+- Applying prospective changes.
+#+END_NOTES
+** Schema
+#+BEGIN_SRC clojure
+[{:db/ident       :person/name
+  :db/doc         "The person's name"
+  :db/valueType   :db.type/string
+  :db/unique      :db.unique/identity
+  :db/cardinality :db.cardinality/one}
+ {:db/ident       :person/likes
+  :db/doc         "The person's hobby"
+  :db/valueType   :db.type/string
+  :db/cardinality :db.cardinality/one}
+ {:db/ident       :person/drives
+  :db/doc         "The model of vehicle the person drives."
+  :db/valueType   :db.type/string
+  :db/cardinality :db.cardinality/one}]
+#+END_SRC
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+** Prospective changes
+Changes can be applied to a database value /locally/.
+
+#+BEGIN_NOTES
+Using the same semantics of `transact`
+#+END_NOTES
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+** History
+The history of changes can be queried.
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+** Time
+The database viewed at different points in time.
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+** Datomic + Scala
+- Datomic provides Java APIs.
+- [[http://www.scalamolecule.org/][Molecule library]]
+- [[https://github.com/dwhjames/datomisca][Datomisca library]]
+
+#+BEGIN_NOTES
+Datomisca has not been updated in some time.
+#+END_NOTES
+*** Talks
+- [[http://www.scalamolecule.org/][Molecule videos]]
+- [[https://www.youtube.com/watch?v=AFakD8e7WsQ][Clojure is a Foreign Country: Combining Datomic with Scala - Peter Brachwitz]]
 
 ** Datomic Indexes
 
@@ -251,63 +325,12 @@ Datomic's indexes support different ways of reading data.
 This does not have to be an upfront design decision.
 #+END_NOTES
 
-** TBD
-TODO: Demonstrate graph view (bidirectional reference traversal)
+** Wrapping up
+- http://www.datomic.com/
 
-** TBD
-#+BEGIN_SRC clojure
-(require '[datomic.api :as d])
+#+ATTR_REVEAL: :frag (appear)
+If you'd like to talk more about Datomic and/or Clojure at your organization, let me know!
 
-(def uri "datomic:mem//my-db")
-
-(d/create-database uri)
-
-(def conn (d/conn uri))
-(def db (d/db conn))
-
-(d/q '[:find ?e
-       :where
-       [?e :db/doc "some doc"]]
-     db)
-#+END_SRC
-*** Datomic as an in-memory database
-Take the entity we worked with earlier and create a Datomic schema for
-it.
-Demonstrate that schema is data and consisting of a collection of
-facts.
-Demonstrate transaction, retraction, querying
-**** The database as a value
-Discuss how, in all these cases, we're passing the database as a
-value. Relate this back to Datomic's architecture (peers).
-
-We can create a new database value by:
-- Filtering
-- Applying prospective (TODO: correct word?) changes.
-
-These manipulations /do not/ change the data in the underlying data store.
-*** Datomic + Scala
-- Datomic provides Java APIs.
-- Datomic is available in Clojars.
-
-#+BEGIN_SRC scala
-import datomic.api
-
-val uri = "datomic:mem//my-db"
-Peer.createDatabase(uri)
-val conn = Peer.connect(uri)
-val db = Peer.db(conn)
-
-Peer.q("[:find ?e :where [?e :db/doc \"some doc\"]]")
-#+END_SRC
-**** Use the Docker Datomic environment for exploration
-**** Use the music brains db
-Show the schema
-Walk through queries and transactions with Scala.
-*** Wrapping up
-The Datomic docs
-The Datomic apis
-
-I'm available for further inquiries. If you'd like to talk more about
-Datomic and/or Clojure at your organization, let me know!
-
-Hand out Datomic stickers if I can get them!!
+#+BEGIN_NOTES
+Hand out Datomic stickers!
+#+END_NOTES
