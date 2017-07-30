@@ -3,6 +3,20 @@
   (:require [datomic.api :as d]
             [com.ddeaguiar.datomic-intro.working.schema :as schema]))
 
+(def tx-data [[:db/add (d/tempid :db.part/user -1) :person/name "Daniel"]
+              [:db/add (d/tempid :db.part/user -1) :person/likes "Fishing"]
+              [:db/add (d/tempid :db.part/user -1) :person/drives "Subaru"]
+              [:db/add (d/tempid :db.part/user -1) :person/secretNumber 42]
+
+              [:db/add (d/tempid :db.part/user -2) :person/name "Kolby"]
+              [:db/add (d/tempid :db.part/user -2) :person/likes "Gaming"]
+              [:db/add (d/tempid :db.part/user -2) :person/secretNumber 21]
+
+              [:db/add (d/tempid :db.part/user -3) :person/name "Juan"]
+              [:db/add (d/tempid :db.part/user -3) :person/likes "Fishing"]
+              [:db/add (d/tempid :db.part/user -3) :person/drives "Ford"]
+              [:db/add (d/tempid :db.part/user -3) :person/secretNumber 84]])
+
 (comment
 
  (d/delete-database schema/uri)
@@ -12,17 +26,6 @@
  (def conn (d/connect schema/uri))
 
  @(d/transact conn schema/schema)
-
- (def tx-data [[:db/add (d/tempid :db.part/user -1) :person/name "Daniel"]
-               [:db/add (d/tempid :db.part/user -1) :person/likes "Fishing"]
-               [:db/add (d/tempid :db.part/user -1) :person/drives "Subaru"]
-
-               [:db/add (d/tempid :db.part/user -2) :person/name "Kolby"]
-               [:db/add (d/tempid :db.part/user -2) :person/likes "Gaming"]
-
-               [:db/add (d/tempid :db.part/user -3) :person/name "Juan"]
-               [:db/add (d/tempid :db.part/user -3) :person/likes "Fishing"]
-               [:db/add (d/tempid :db.part/user -3) :person/drives "Ford"]])
 
  (d/q '[:find (count ?e) .
         :where [?e :person/name]]

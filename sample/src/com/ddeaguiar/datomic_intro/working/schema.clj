@@ -26,6 +26,10 @@
              {:db/ident       :person/drives
               :db/doc         "The model of vehicle the person drives."
               :db/valueType   :db.type/string
+              :db/cardinality :db.cardinality/one}
+             {:db/ident       :person/secretNumber
+              :db/doc         "A super secret number"
+              :db/valueType   :db.type/long
               :db/cardinality :db.cardinality/one}])
 
 (def uri "datomic:mem://people")

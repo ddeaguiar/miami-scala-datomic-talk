@@ -19,6 +19,30 @@
 - Software Engineer/Consultant.
 - Currently working with Clojure.
 * What /is/ Datomic?
+** Datomic is
+
+#+ATTR_REVEAL: :frag (appear)
+A relational database
+
+#+ATTR_REVEAL: :frag (appear)
+Where information consists of /facts/
+
+#+ATTR_REVEAL: :frag (appear)
+And facts accumulate
+
+#+ATTR_REVEAL: :frag (appear)
+It is not /Place Oriented/
+
+#+BEGIN_NOTES
+Datomic is an /information system/.
+
+Facts are called /datoms/.
+
+The past is immutable.
+
+New information /does not/ replace old, in place.
+#+END_NOTES
+
 ** Ledger
 
 #+ATTR_REVEAL: :frag (appear)
@@ -43,26 +67,6 @@ Key points from the quote:
 Our version control systems are purpose built for tracking change at various degrees of granularity.
 
 We value tools like this and would (should) go up in arms if were told not to use them.
-#+END_NOTES
-
-** Datomic is a relational database
-
-#+ATTR_REVEAL: :frag (appear)
-It's an information system
-
-#+ATTR_REVEAL: :frag (appear)
-Information consists of /facts/
-
-#+ATTR_REVEAL: :frag (appear)
-Datomic accumulates facts
-
-#+ATTR_REVEAL: :frag (appear)
-It is not /Place Oriented/.
-
-#+BEGIN_NOTES
-The past is immutable.
-
-New information /does not/ replace old, in place.
 #+END_NOTES
 
 ** What are facts?
@@ -104,7 +108,7 @@ The next slides revisit our fact tuple example in this context.
 /[Entity Attribute Value Transaction Operation]/
 
 #+BEGIN_NOTES
-Transaction is a monotonically increasing value.
+Transaction is the transaction id.
 
 Operation represents either an /assertion/ or /retraction/.
 #+END_NOTES
@@ -121,8 +125,8 @@ Operation represents either an /assertion/ or /retraction/.
 *** Entity Example
 #+BEGIN_SRC clojure
 [{:name "Daniel" :likes "Fishing" :drives "Subaru"}
-{:name "Kolby" :likes "Gaming"}
-{:name "Juan" :likes "Fishing" :drives "Ford"}]
+ {:name "Kolby" :likes "Gaming"}
+ {:name "Juan" :likes "Fishing" :drives "Ford"}]
 #+END_SRC
 
 #+BEGIN_NOTES
@@ -133,10 +137,10 @@ of tuples. This collection is a simple database.
 *** Fact Database
 #+BEGIN_SRC clojure
 [["Daniel" :likes "Fishing"]
-["Daniel" :drives "Subaru"]
-["Kolby" :likes "Gaming"]
-["Juan" :likes "Fishing"]
-["Juan" :drives "Ford"]]
+ ["Daniel" :drives "Subaru"]
+ ["Kolby" :likes "Gaming"]
+ ["Juan" :likes "Fishing"]
+ ["Juan" :drives "Ford"]]
 #+END_SRC
 
 #+BEGIN_NOTES
@@ -144,7 +148,7 @@ This /database/ is an /immutable/ clojure value.
 Datomic databases /are/ immutable and can be treated as values!
 #+END_NOTES
 
-** Datalog
+** Querying the database
 
 We can query the database using Datomic Datalog.
 
@@ -262,6 +266,10 @@ We'll see how powerful this is later when we demonstrate:
  {:db/ident       :person/drives
   :db/doc         "The model of vehicle the person drives."
   :db/valueType   :db.type/string
+  :db/cardinality :db.cardinality/one}
+ {:db/ident       :person/secretNumber
+  :db/doc         "A super secret number"
+  :db/valueType   :db.type/integer
   :db/cardinality :db.cardinality/one}]
 #+END_SRC
 
@@ -286,6 +294,12 @@ Code sample
 
 ** Time
 The database viewed at different points in time.
+
+#+ATTR_REVEAL: :frag (appear)
+Code sample
+
+** Adhoc Filtering
+The database can be filtered using arbitrary predicates.
 
 #+ATTR_REVEAL: :frag (appear)
 Code sample
