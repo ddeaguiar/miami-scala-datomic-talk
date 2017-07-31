@@ -181,3 +181,28 @@
        [?entity ?attribute ?value]]
      facts
      "Fishing")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;; Can also perform aggregation
+(d/q '[:find (count ?entity) .
+       :in $ ?likes
+       :where
+       [?entity :likes ?likes]]
+     facts
+     "Fishing")

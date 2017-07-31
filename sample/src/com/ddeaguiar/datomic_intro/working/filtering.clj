@@ -18,7 +18,7 @@
 
  (def unfiltered-db (d/db conn))
 
- (def filtered-db (d/filter (d/db conn) (fn [db datom]
+ (def filtered-db (d/filter unfiltered-db (fn [db datom]
                                           (not= (d/entid db :person/secretNumber) (:a datom)))))
 
  (d/q '[:find [(pull ?e [*]) ...]

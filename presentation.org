@@ -262,19 +262,70 @@ We'll see how powerful this is later when we demonstrate:
  {:db/ident       :person/likes
   :db/doc         "The person's hobby"
   :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}
+  :db/cardinality :db.cardinality/one
+  :db/index       true}
  {:db/ident       :person/drives
   :db/doc         "The model of vehicle the person drives."
   :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}
+  :db/cardinality :db.cardinality/one
+  :db/index       true}
  {:db/ident       :person/secretNumber
   :db/doc         "A super secret number"
-  :db/valueType   :db.type/integer
-  :db/cardinality :db.cardinality/one}]
+  :db/valueType   :db.type/long
+  :db/cardinality :db.cardinality/one}
+ {:db/id    "people"
+  :db/ident :people}
+ [:db/add :db.part/db :db.install/partition "people"]]
 #+END_SRC
+
+#+BEGIN_NOTES
+The attributes that an an entity contains is defined
+at transact time by the application.
+
+:db.unique/identity attributes are automatically indexed.
+#+END_NOTES
+
+*** Attribute types
+
+- String
+- UUID
+- Long
+- BigInteger
+- Float
+- Double
+- BigDecimal
+- boolean
+- ref
+- instant
+- keyword
+- URI
+- bytes
+
+*** Optional Schema attributes
+
+- :db/unique
+- :db/index
+- :db/doc
+- :db/fulltext
+- :db/isComponent
+- :db/noHistory
+
+*** Partitions
+
+- Partitions group data together
+- Increases query performance
 
 #+ATTR_REVEAL: :frag (appear)
 Code sample
+
+#+BEGIN_NOTES
+The docs state that the :db.part/user partition should only be used
+for experimentation. Your schema should create one or more partitions
+appropriate for your application.
+
+Schema attributes are created in the :db.part/db partition.
+Transaction entities reside in the :db.part/tx partition.
+#+END_NOTES
 
 ** Prospective changes
 Changes can be applied to a database value /locally/.
@@ -341,6 +392,8 @@ This does not have to be an upfront design decision.
 
 #+ATTR_REVEAL: :frag (appear)
 If you'd like to talk more about Datomic and/or Clojure at your organization, let me know!
+
+TODO: Add information regarding the different Datomic distributions.
 
 #+BEGIN_NOTES
 Hand out Datomic stickers!
