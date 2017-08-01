@@ -393,8 +393,6 @@ This does not have to be an upfront design decision.
 #+ATTR_REVEAL: :frag (appear)
 If you'd like to talk more about Datomic and/or Clojure at your organization, let me know!
 
-TODO: Add information regarding the different Datomic distributions.
-
 #+BEGIN_NOTES
 Hand out Datomic stickers!
 #+END_NOTES
