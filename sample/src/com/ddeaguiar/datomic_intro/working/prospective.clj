@@ -31,12 +31,19 @@
         :where [?e :person/name]]
       (d/db conn))
 
- @(d/transact conn tx-data)
+ (def tx @(d/transact conn tx-data))
 
  (let [prospective-db (:db-after (d/with (d/db conn)
                                          [{:person/name "Daniel" :person/likes "Hiking"}]))]
    (d/pull prospective-db '[*] [:person/name "Daniel"]))
 
  (d/pull (d/db conn) '[*] [:person/name "Daniel"])
+
+
+ ;; retraction
+ (let [prospective-db (:db-after (d/with (d/db conn)
+                                         [{:person/name "Daniel" :person/likes "Hiking"}
+                                          [:db/retract [:person/name "Daniel"] :person/drives "Subaru"]]))]
+   (d/pull prospective-db '[*] [:person/name "Daniel"]))
 
  )

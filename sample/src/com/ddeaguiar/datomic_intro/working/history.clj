@@ -23,12 +23,14 @@
       (d/history (d/db conn)))
 
  (def db-after (:db-after (d/with (d/db conn) [{:person/name  "Daniel"
-                                                :person/likes "Hiking"}])))
+                                                :person/likes "Hiking"}
+                                               [:db/retract [:person/name "Daniel"] :person/drives "Subaru"]])))
 
- (d/q '[:find ?e ?likes ?tx ?op
+ (d/q '[:find ?e ?attr ?value ?tx ?op
         :where
         [?e :person/name "Daniel"]
-        [?e :person/likes ?likes ?tx ?op]]
+        [?e ?attr-id ?value ?tx ?op]
+        [?attr-id :db/ident ?attr]]
       (d/history db-after))
 
  )
